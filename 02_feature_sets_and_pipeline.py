@@ -12,6 +12,17 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
 df = pd.read_excel(DATA_DIR / "amphibian_cleaned.xlsx")
+
+df = df.rename(columns={
+    "Mining/energy_production": "Mining_energy_production",
+    "Climate_(ongoing)": "Climate_ongoing",
+    "Climate_(future)": "Climate_future",
+    "Bd_(future)": "Bd_future",
+    "Bd_(ongoing)": "Bd_ongoing",
+    "Bsal_(future)": "Bsal_future",
+    "Bsal_(ongoing)": "Bsal_ongoing"
+})
+
 print(df.shape)
 print(df.head())
 
