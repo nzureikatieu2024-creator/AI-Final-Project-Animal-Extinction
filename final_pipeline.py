@@ -3,13 +3,6 @@
 # 1. DATA LOADING & EDA
 # ==============================
 
-## Step 1:  Dataset
-import os
-
-os.system("pip install pandas numpy matplotlib seaborn scikit-learn joblib openpyxl")
-from pathlib import Path
-
-
 # Project structure
 BASE_DIR = Path(".")
 DATA_DIR = BASE_DIR / "data"
