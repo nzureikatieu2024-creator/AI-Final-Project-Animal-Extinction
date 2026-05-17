@@ -8,12 +8,12 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 import copy
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
 df = pd.read_excel(DATA_DIR / "amphibian_cleaned.xlsx")
 print(df.shape)
-df.head()
+print(df.head())
 
 y = df['High_Risk']
 print(y.value_counts())
