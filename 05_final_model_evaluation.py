@@ -1,4 +1,5 @@
-#Final Evaluation and Interpretation
+"""
+# Final Evaluation and Interpretation
 
 ## Project: Early Indicators of Amphibian Extinction Risk Using Machine Learning
 
@@ -21,7 +22,6 @@ The full feature set may produce stronger performance, but it must be interprete
 """
 
 # If the model files do not load, run this once, then restart runtime:
-# !pip install scikit-learn==1.6.1
 
 import pandas as pd
 import numpy as np
@@ -48,7 +48,8 @@ BASE_DIR = Path(".")
 MODELS_DIR = BASE_DIR / "models"
 OUTPUTS_DIR = BASE_DIR / "outputs"
 
-"""# 3. Load Final Models and Test Data
+"""
+# 3. Load Final Models and Test Data
 
 In this section, we load the final tuned models and the matching test datasets.
 
@@ -75,7 +76,8 @@ X_test_restricted = pd.read_csv(OUTPUTS_DIR / "X_test_restricted.csv")
 X_test_full = pd.read_csv(OUTPUTS_DIR / "X_test_full.csv")
 y_test = pd.read_csv(OUTPUTS_DIR / "y_test.csv").squeeze()
 
-"""# 4. Check Data Shapes
+"""
+# 4. Check Data Shapes
 
 Before generating predictions, we check that the test datasets and target variable have matching numbers of rows.
 """
@@ -84,7 +86,8 @@ print("X_test_restricted shape:", X_test_restricted.shape)
 print("X_test_full shape:", X_test_full.shape)
 print("y_test shape:", y_test.shape)
 
-"""The restricted test set contains fewer features because it excludes variables that may be too close to the Red List assessment process. The full test set contains more features because it also includes threat-related variables. Both test sets contain the same number of species, so the model comparison is based on the same evaluation examples.
+"""
+The restricted test set contains fewer features because it excludes variables that may be too close to the Red List assessment process. The full test set contains more features because it also includes threat-related variables. Both test sets contain the same number of species, so the model comparison is based on the same evaluation examples.
 
 # 5. Initial Tuning Results
 
@@ -95,7 +98,8 @@ tuning_results
 
 tuning_results.sort_values(by="Test F1", ascending=False)
 
-"""# 6. Interpretation of Initial Tuning Results
+"""
+# 6. Interpretation of Initial Tuning Results
 
 The tuning results show that the full feature-set models achieve almost perfect performance. This suggests that the additional threat-related variables provide very strong predictive information.
 
@@ -128,7 +132,8 @@ y_proba_rf_full = best_rf_full.predict_proba(X_test_full)[:, 1]
 y_pred_gbm_full = best_gbm_full.predict(X_test_full)
 y_proba_gbm_full = best_gbm_full.predict_proba(X_test_full)[:, 1]
 
-"""# 8. Final Evaluation Table
+"""
+# 8. Final Evaluation Table
 
 This table evaluates all final tuned models on the same test set.
 
@@ -158,7 +163,8 @@ final_results = pd.DataFrame([
 final_results.sort_values(by="F1-score", ascending=False)
 final_results.to_csv(OUTPUTS_DIR / "final_model_evaluation_results.csv", index=False)
 
-"""# 9. Final Evaluation Table Interpretation
+"""
+# 9. Final Evaluation Table Interpretation
 
 The full feature-set models perform best numerically. The Full Random Forest reaches accuracy = 0.994, F1-score = 0.992, recall = 0.984, precision = 1.000, ROC-AUC = 0.996, and balanced accuracy = 0.992.
 
@@ -198,7 +204,8 @@ ConfusionMatrixDisplay.from_predictions(
 plt.title("Confusion Matrix - Full Random Forest")
 plt.show()
 
-"""## Confusion Matrix Interpretation
+"""
+## Confusion Matrix Interpretation
 
 The Restricted Random Forest correctly classifies 546 low-risk species and 388 high-risk species. It makes 292 false positives and 187 false negatives.
 
@@ -246,7 +253,8 @@ RocCurveDisplay.from_predictions(
 plt.title("ROC Curve Comparison")
 plt.show()
 
-"""# 12. Precision-Recall Curve + Interpretation
+"""
+# 12. Precision-Recall Curve + Interpretation
 
 The Restricted Random Forest has an average precision of approximately 0.63. Its precision decreases as recall increases, meaning that detecting more high-risk species comes with more false positives.
 
@@ -280,7 +288,9 @@ PrecisionRecallDisplay.from_predictions(
 plt.title("Precision-Recall Curve Comparison")
 plt.show()
 
-"""# 13. Classification Report + Interpretation
+"""
+# 13. Classification Report + Interpretation
+
 The Restricted Random Forest performs better on low-risk species than high-risk species. For low-risk species, precision = 0.74, recall = 0.65, and F1-score = 0.70.
 
 For high-risk species, precision = 0.57, recall = 0.67, and F1-score = 0.62. This means the model detects about two-thirds of truly high-risk species, but many predicted high-risk cases are actually low-risk.
@@ -302,7 +312,8 @@ print(classification_report(
     target_names=["Low risk", "High risk"]
 ))
 
-"""The classification report helps identify whether the model is better at recognizing low-risk species or high-risk species. In this project, performance on the high-risk class is especially important because missing high-risk species would be the most serious type of error.
+"""
+The classification report helps identify whether the model is better at recognizing low-risk species or high-risk species. In this project, performance on the high-risk class is especially important because missing high-risk species would be the most serious type of error.
 
 # 14. Feature Importance + Interpretation
 
@@ -338,7 +349,8 @@ plt.xlabel("Importance")
 plt.title("Top 15 Most Important Features - Restricted Random Forest")
 plt.show()
 
-"""The most important features provide insight into which taxonomic, biological, or geographic variables were most useful for predicting extinction risk. Because this is the restricted feature set, these variables are less likely to directly encode the Red List assessment outcome.
+"""
+The most important features provide insight into which taxonomic, biological, or geographic variables were most useful for predicting extinction risk. Because this is the restricted feature set, these variables are less likely to directly encode the Red List assessment outcome.
 
 However, feature importance should be interpreted carefully. It shows predictive usefulness, not causation.
 
@@ -351,6 +363,7 @@ However, we select the Restricted Random Forest as the final conservative model 
 The full model is still useful as a comparison because it shows that threat-related variables add substantial predictive power.
 
 # 16. Limitations
+
 The main limitation is that the target variable comes from expert-assessed Red List categories, not a direct biological outcome. Also, the full feature set may include variables connected to the assessment process, which could explain the near-perfect Full Random Forest performance: F1-score = 0.992 and ROC-AUC = 0.996.
 
 The restricted model is more conservative, but its performance is moderate: F1-score = 0.618 and ROC-AUC = 0.728. It also misses 187 high-risk species and incorrectly flags 292 low-risk species.
@@ -358,6 +371,7 @@ The restricted model is more conservative, but its performance is moderate: F1-s
 Finally, feature importance shows predictive association, not causation. For example, Australasian/Oceanian and Water Breeding are useful for prediction, but this does not prove they directly cause extinction risk.
 
 # 17. Final Conclusion
+
 The final evaluation shows that machine learning can identify patterns associated with amphibian extinction risk, but results depend strongly on the feature set.
 
 The Full Random Forest performs almost perfectly, with F1-score = 0.992, ROC-AUC = 0.996, 0 false positives, and only 9 false negatives. This suggests that threat variables are highly predictive.
