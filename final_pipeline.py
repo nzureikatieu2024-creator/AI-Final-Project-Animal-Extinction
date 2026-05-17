@@ -3,6 +3,12 @@
 # 1. DATA LOADING & EDA
 # ==============================
 
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 # Project structure
 BASE_DIR = Path(".")
 DATA_DIR = BASE_DIR / "data"
