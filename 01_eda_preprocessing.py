@@ -1,11 +1,31 @@
-
+# ==============================
+# 1. DATA LOADING & EDA
+# ==============================
 
 ## Step 1:  Dataset
 """
+import os
+
+os.system("pip install pandas numpy matplotlib seaborn scikit-learn joblib openpyxl")
+from pathlib import Path
+
+
+# Project structure
+BASE_DIR = Path(".")
+DATA_DIR = BASE_DIR / "data"
+MODELS_DIR = BASE_DIR / "models"
+OUTPUTS_DIR = BASE_DIR / "outputs"
+
+# Create folders if they don't exist
+MODELS_DIR.mkdir(exist_ok=True)
+OUTPUTS_DIR.mkdir(exist_ok=True)
 
 import pandas as pd
+# The cleaned dataset was created from the two raw source files using
+# 00_data_cleaning_merging.py. The raw files and cleaning script are included
+# in the repository for reproducibility.
 
-df = pd.read_excel('amphibian_cleaned.xlsx')
+df = pd.read_excel(DATA_DIR / "amphibian_cleaned.xlsx")
 df.head()
 
 """## Step 2: Overview"""
@@ -17,6 +37,16 @@ df.describe()
 """## Step 3: Columns"""
 
 df.columns
+
+df = df.rename(columns={
+    "Mining/energy_production": "Mining_energy_production",
+    "Climate_(ongoing)": "Climate_ongoing",
+    "Climate_(future)": "Climate_future",
+    "Bd_(future)": "Bd_future",
+    "Bd_(ongoing)": "Bd_ongoing",
+    "Bsal_(future)": "Bsal_future",
+    "Bsal_(ongoing)": "Bsal_ongoing"
+})
 
 """#Missing Values"""
 
@@ -100,7 +130,7 @@ df.select_dtypes(include=['int64','float64']).columns
 features = [
     'Agriculture',
     'Pollution',
-    'Climate_(ongoing)',
+    'Climate_ongoing',
     'Invasive_species',
     'Over-exploitation'
 ]
@@ -142,7 +172,7 @@ The target variable shows a moderate class imbalance, with more species classifi
 threat_cols = [
     "Agriculture",
     "Pollution",
-    "Climate_(ongoing)",
+    "Climate_ongoing",
     "Invasive_species",
     "Over-exploitation"
 ]
@@ -189,10 +219,11 @@ df.groupby("High_Risk")[bio_cols].mean().T
 The EDA suggests that high-risk species tend to show higher average exposure to multiple human-impact and environmental threat indicators, including pollution, agriculture, climate-related pressures, invasive species, and over-exploitation. These factors consistently show stronger associations with high-risk classification. However, these relationships should be interpreted as associations rather than causal effects, as the dataset reflects expert assessments rather than controlled observations.
 
 These findings provide a strong foundation for feature selection and support the use of classification models in the next stage of the project.
-"""
 
-# load final cleaned dataset
-df = pd.read_excel("amphibian_cleaned.xlsx")
+# ==============================
+# 2. TRAIN / TEST SPLIT
+# ==============================
+"""
 
 # recreate the SAME split used in modeling (20% test set)
 from sklearn.model_selection import train_test_split
@@ -208,3 +239,5 @@ plt.xlabel("Risk Category")
 plt.show()
 
 df['High_Risk'].value_counts()
+
+
