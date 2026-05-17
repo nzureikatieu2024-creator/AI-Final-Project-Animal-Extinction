@@ -26,8 +26,14 @@ These results are preliminary holdout benchmarks only. They are not used for fin
 ## Dataset Loading
 """
 
+# ==============================
+# 4. BASELINE MODELS
+# ==============================
+
 import pandas as pd
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -49,31 +55,22 @@ from sklearn.metrics import (
     roc_auc_score
 )
 
-import warnings
-warnings.filterwarnings("ignore")
-
-"""## Dataset Loading
-
-We use the cleaned amphibian dataset prepared by the previous team steps. The target variable is `High_Risk`, where 1 represents high extinction risk and 0 represents low extinction risk.
-"""
-
-df = pd.read_excel("amphibian_cleaned.xlsx")
+# ------------------------------------------------
+# Dataset
+# ------------------------------------------------
+# Assumes df has already been loaded and columns have already been renamed
+# in the earlier pipeline section.
 
 print("Dataset shape:", df.shape)
-print(df.head())
+print("\nTarget distribution:")
 print(df["High_Risk"].value_counts())
 
-print("Target distribution:")
-display(df["High_Risk"].value_counts())
-
 print("\nTarget proportions:")
-display(df["High_Risk"].value_counts(normalize=True))
+print(df["High_Risk"].value_counts(normalize=True).round(3))
 
-"""## Train-Test Split
-
-The dataset is split before fitting any model or preprocessing step. This avoids preprocessing leakage, because imputation and encoding should be learned only from the training data, not from the full dataset.
-"""
-
+# ------------------------------------------------
+# Train-test split
+# ------------------------------------------------
 X = df.drop(columns=["High_Risk", "Species_Name"])
 y = df["High_Risk"]
 
@@ -89,27 +86,20 @@ print("Training set:", X_train.shape)
 print("Test set:", X_test.shape)
 
 print("\nTrain target distribution:")
-print(y_train.value_counts(normalize=True))
+print(y_train.value_counts(normalize=True).round(3))
 
 print("\nTest target distribution:")
-print(y_test.value_counts(normalize=True))
+print(y_test.value_counts(normalize=True).round(3))
 
-"""## Feature Sets
-
-Following the group pipeline, I evaluate baseline models on two feature sets:
-
-1. Restricted feature set: taxonomy, geography, and biological traits.
-2. Full feature set: restricted early-indicator features plus selected human-impact and environmental threat variables.
-
-This allows the group to compare a cleaner early-indicator benchmark against a broader feature set including threat information.
-"""
-
-taxonomy_features = [
+# ------------------------------------------------
+# Feature sets — aligned with group pipeline
+# ------------------------------------------------
+TAXONOMY_FEATURES = [
     "Order",
     "Family"
 ]
 
-geography_features = [
+GEOGRAPHY_FEATURES = [
     "Afrotropical",
     "Australasian/Oceanian",
     "Indomalayan",
@@ -118,80 +108,79 @@ geography_features = [
     "Palearctic"
 ]
 
-bio_features = [
+BIOLOGY_FEATURES = [
     "Egg_Laying",
     "Free_Living_Larval_Stage",
     "Live_Birth",
     "Water_Breeding"
 ]
 
-threat_features = [
+THREAT_FEATURES = [
     "Agriculture",
     "Timber_and_plant_harvesting",
     "Infrastructure_development",
     "Pollution",
-    "Mining/energy_production",
+    "Mining_energy_production",
     "Water_management",
     "Human_disturbance",
     "Geological_Events",
     "Over-exploitation",
-    "Climate_(ongoing)",
-    "Climate_(future)",
+    "Climate_ongoing",
+    "Climate_future",
     "Fire",
-    "Bd_(future)",
-    "Bd_(ongoing)",
-    "Bsal_(future)",
-    "Bsal_(ongoing)",
+    "Bd_future",
+    "Bd_ongoing",
+    "Bsal_future",
+    "Bsal_ongoing",
     "Invasive_species",
     "Natives_species"
 ]
 
-restricted_features = taxonomy_features + geography_features + bio_features
-full_features = restricted_features + threat_features
+PIPELINE_A_FEATURES = TAXONOMY_FEATURES + GEOGRAPHY_FEATURES + BIOLOGY_FEATURES
+PIPELINE_B_FEATURES = PIPELINE_A_FEATURES + THREAT_FEATURES
 
 feature_sets = {
-    "Restricted": restricted_features,
-    "Full": full_features
+    "Pipeline A - Restricted": PIPELINE_A_FEATURES,
+    "Pipeline B - Full": PIPELINE_B_FEATURES
 }
 
 for name, features in feature_sets.items():
     print(name, "feature count:", len(features))
 
-"""## Preprocessing
-
-Categorical variables are one-hot encoded, while binary/numeric variables are passed through after imputation. The preprocessing is placed inside a Scikit-learn Pipeline so that transformations are fitted only on the training set.
-"""
-
+# ------------------------------------------------
+# Preprocessing
+# ------------------------------------------------
 def build_preprocessor(feature_list):
     categorical_cols = [col for col in feature_list if col in ["Order", "Family"]]
-    numeric_cols = [col for col in feature_list if col not in categorical_cols]
+    binary_cols = [col for col in feature_list if col not in categorical_cols]
 
     categorical_pipeline = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="most_frequent")),
         ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False))
     ])
 
-    numeric_pipeline = Pipeline(steps=[
+    binary_pipeline = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="constant", fill_value=0))
     ])
 
+    transformers = []
+
+    if categorical_cols:
+        transformers.append(("categorical", categorical_pipeline, categorical_cols))
+
+    if binary_cols:
+        transformers.append(("binary", binary_pipeline, binary_cols))
+
     preprocessor = ColumnTransformer(
-        transformers=[
-            ("categorical", categorical_pipeline, categorical_cols),
-            ("numeric", numeric_pipeline, numeric_cols)
-        ],
+        transformers=transformers,
         remainder="drop"
     )
 
     return preprocessor
 
-"""## Baseline Models
-
-I train several baseline models: Dummy Classifier, Logistic Regression, Decision Tree, Random Forest, and Gradient Boosting. These models give the group a first benchmark before Hamza performs tuning.
-"""
-
-from sklearn.ensemble import RandomForestClassifier
-
+# ------------------------------------------------
+# Baseline models
+# ------------------------------------------------
 models = {
     "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
     "Logistic Regression": LogisticRegression(
@@ -206,13 +195,17 @@ models = {
     "Random Forest": RandomForestClassifier(
         n_estimators=100,
         class_weight="balanced",
-        random_state=42
+        random_state=42,
+        n_jobs=-1
     ),
-    "Gradient Boosting": GradientBoostingClassifier(random_state=42)
+    "Gradient Boosting": GradientBoostingClassifier(
+        random_state=42
+    )
 }
 
-"""## Evaluation function"""
-
+# ------------------------------------------------
+# Evaluation function
+# ------------------------------------------------
 def evaluate_model(model, X_train, X_test, y_train, y_test, feature_list):
     preprocessor = build_preprocessor(feature_list)
 
@@ -232,16 +225,19 @@ def evaluate_model(model, X_train, X_test, y_train, y_test, feature_list):
         roc_auc = np.nan
 
     results = {
-        "F1": f1_score(y_test, y_pred),
-        "Recall": recall_score(y_test, y_pred),
-        "Precision": precision_score(y_test, y_pred),
+        "Accuracy": accuracy_score(y_test, y_pred),
+        "Balanced Accuracy": balanced_accuracy_score(y_test, y_pred),
+        "F1": f1_score(y_test, y_pred, zero_division=0),
+        "Recall": recall_score(y_test, y_pred, zero_division=0),
+        "Precision": precision_score(y_test, y_pred, zero_division=0),
         "ROC-AUC": roc_auc
     }
 
     return results, pipeline
 
-"""## Run all baseline models"""
-
+# ------------------------------------------------
+# Run baseline models
+# ------------------------------------------------
 all_results = []
 trained_pipelines = {}
 
@@ -250,31 +246,33 @@ for feature_set_name, feature_list in feature_sets.items():
 
     for model_name, model in models.items():
         results_dict, pipeline = evaluate_model(
-    model,
-    X_train,
-    X_test,
-    y_train,
-    y_test,
-    feature_list=feature_list
-)
+            model=model,
+            X_train=X_train,
+            X_test=X_test,
+            y_train=y_train,
+            y_test=y_test,
+            feature_list=feature_list
+        )
 
         results_dict["Feature Set"] = feature_set_name
         results_dict["Model"] = model_name
 
         all_results.append(results_dict)
-
         trained_pipelines[(feature_set_name, model_name)] = pipeline
 
 print("All baseline models finished.")
 
-"""## Results table"""
-
+# ------------------------------------------------
+# Results table
+# ------------------------------------------------
 results_table = pd.DataFrame(all_results)
 
 results_table = results_table[
     [
         "Feature Set",
         "Model",
+        "Accuracy",
+        "Balanced Accuracy",
         "F1",
         "Recall",
         "Precision",
@@ -285,18 +283,14 @@ results_table = results_table[
 results_table = results_table.sort_values(
     by=["Feature Set", "F1"],
     ascending=[True, False]
-)
-
-results_table = results_table.round(3)
+).round(3)
 
 display(results_table)
 
-"""These results are preliminary holdout benchmarks only. They are not used for final model selection or hyperparameter tuning. Final model selection should be performed using cross-validation inside the training set, and the test set should be used only once at the end for final evaluation.
-
-## Save results
-"""
-
-results_table.to_csv("haya_baseline_results.csv", index=False)
+# ------------------------------------------------
+# Save results
+# ------------------------------------------------
+results_table.to_csv(OUTPUTS_DIR / "haya_baseline_results.csv", index=False)
 
 print("Saved results as haya_baseline_results.csv")
 
