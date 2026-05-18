@@ -1,3 +1,5 @@
+Copy-paste this as your final `README.md`:
+
 ````md
 # AI-Final-Project-Animal-Extinction
 
@@ -21,13 +23,25 @@ The target variable is `High_Risk`:
 - `1` = high-risk species
 - `0` = lower-risk species
 
-## How to Run
+## How to Run the Project
+
+First, clone the repository:
+
+```bash
+git clone https://github.com/nzureikatieu2024-creator/AI-Final-Project-Animal-Extinction.git
+````
+
+Move into the project folder:
+
+```bash
+cd AI-Final-Project-Animal-Extinction
+```
 
 Install the required packages:
 
 ```bash
 python -m pip install -r requirements.txt
-````
+```
 
 Then run the final pipeline:
 
@@ -38,12 +52,15 @@ python final_pipeline.py
 If your system uses `python3`, use:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 final_pipeline.py
 ```
 
-`final_pipeline.py` is the main file for the final submission. The other Python files are included to show the earlier separate stages of the project.
+`final_pipeline.py` is the main file for the final submission. It runs the full workflow from data loading to model evaluation. The other Python files are included to show the earlier separate stages of the project and individual contributions.
 
-The final pipeline was exported from Google Colab, so some text appears as triple-quoted markdown comments. This does not affect the code. It still runs as a normal Python script.
+## Note on Colab Export
+
+This project was developed in Google Colab and exported into `.py` files. Because of that, some formatting may look slightly unusual, such as text sections appearing as triple-quoted markdown comments. This does not affect execution. The final pipeline still runs as a normal Python script.
 
 ## Project Structure
 
@@ -66,7 +83,7 @@ AI-Final-Project-Animal-Extinction/
 └── README.md
 ```
 
-## Files
+## File Descriptions
 
 * `00_data_cleaning_merging.py`: cleans and merges the raw datasets
 * `01_eda_preprocessing.py`: explores and preprocesses the dataset
@@ -74,24 +91,24 @@ AI-Final-Project-Animal-Extinction/
 * `03_baseline_models.py`: trains baseline models
 * `04_hyperparamater_tuning.py`: tunes the final models
 * `05_final_model_evaluation.py`: evaluates the final models
-* `final_pipeline.py`: runs the full final workflow
+* `final_pipeline.py`: runs the complete final workflow
 
 ## Feature Sets
 
 We compared two feature sets:
 
-**Restricted features**
+**Restricted feature set**
 
 * Taxonomy
 * Geography
 * Biological traits
 
-**Full features**
+**Full feature set**
 
 * Restricted features
 * Threat-related variables
 
-The full model gave stronger numerical results, but we interpreted it carefully because threat variables may be linked to the Red List assessment process. For final interpretation, we focused more on the Restricted Random Forest because it is more conservative.
+The full model gave stronger numerical results, but we interpreted it carefully because threat variables may be linked to the Red List assessment process. For final interpretation, we focused more on the Restricted Random Forest because it is more conservative and better suited for identifying independent early indicators.
 
 ## Main Results
 
@@ -107,7 +124,7 @@ The full model gave stronger numerical results, but we interpreted it carefully 
 
 ## Common Issues
 
-If you get:
+If you get this error:
 
 ```text
 ModuleNotFoundError: No module named 'pandas'
@@ -126,9 +143,6 @@ python -m pip install openpyxl
 ```
 
 If you see a `ResourceTracker` or `ChildProcessError` warning at the end, the code may still have run correctly as long as the results printed and the output files were created.
-
-```
-```
 
 
 
