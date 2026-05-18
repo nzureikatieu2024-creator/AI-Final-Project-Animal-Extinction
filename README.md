@@ -125,3 +125,25 @@ python -m pip install openpyxl
 ```
 
 If you see a `ResourceTracker` or `ChildProcessError` warning at the end, the code may still have run correctly as long as the results printed and the output files were created.
+
+
+## Requirements
+
+This project was developed in Python and exported from Google Colab into `.py` files.  
+Some text sections may appear as triple-quoted markdown comments, but the code runs as a normal Python script.
+
+To install everything needed to run the project, use:
+
+```bash
+python -m pip install -r requirements.txt
+
+or, if your system uses python3:
+
+python3 -m pip install -r requirements.txt
+
+Then run:
+
+python final_pipeline.py
+
+The package openpyxl is required because the dataset is stored in Excel format.
+The package scipy is included because some scikit-learn tuning tools depend on it.
