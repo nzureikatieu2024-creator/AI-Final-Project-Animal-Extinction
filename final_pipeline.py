@@ -672,27 +672,10 @@ print("Saved results as haya_baseline_results.csv")
 
 """## Baseline Results Interpretation
 
-The baseline models provide the first benchmark for the project. The Dummy Classifier represents the zero-rule baseline because it predicts the majority class without using input features.
+The baseline models provide an initial benchmark before tuning. The Dummy Classifier serves as the zero-rule baseline, while Logistic Regression, Decision Tree, Random Forest, and Gradient Boosting test whether the available features contain predictive signal.
 
-The Logistic Regression model provides a simple linear baseline, while Decision Tree, Random Forest, and Gradient Boosting capture non-linear relationships and feature interactions.
+The full feature set generally performs better than the restricted feature set, suggesting that threat variables add predictive value. However, because some threat variables may be linked to the Red List assessment process, final interpretation should rely more cautiously on the restricted feature set. These baseline results are used only as preliminary benchmarks before cross-validation-based tuning.
 
-The full feature set generally performs better than the restricted set, suggesting that threat-related variables add predictive value for extinction risk.
-
-These results are preliminary and will be used for further hyperparameter tuning and final evaluation.
-
-The results show that models trained on the full feature set consistently outperform those using the restricted set, indicating that threat-related variables significantly improve predictive performance. Among the models, ensemble methods such as Random Forest and Gradient Boosting achieve the highest F1 scores, suggesting that capturing non-linear relationships and feature interactions is important for this classification task.
-
-The full feature set performs much better than the restricted set, suggesting that threat variables provide strong predictive signal. However, these results must be interpreted carefully because some threat indicators may be linked to the same expert assessment process used to assign Red List categories. Therefore, the restricted model is a cleaner early-indicator benchmark, while the full model shows the added predictive value of recorded threat information.
-
-Overall, this section provides valid initial benchmarks, but final conclusions should only be made after cross-validation-based tuning and a single final evaluation on the test set.
-
-### Extra — Baseline Models
-
-For Step 3, I trained baseline classification models on the cleaned amphibian dataset. I used a Dummy Classifier, Logistic Regression, Decision Tree, Random Forest, and Gradient Boosting model. These models were tested on both the restricted feature set and the full feature set.
-
-The purpose of this step was not to tune the models, but to create an initial benchmark for the group. The Dummy Classifier provides the zero-rule baseline, while the other models show whether the available features contain predictive signal for extinction risk.
-
-The resulting table reports F1 score, precision, recall, and ROC-AUC. These results will be used by the next team member for hyperparameter tuning and later by Noor for final evaluation and insights.
 
 # ==============================
 # 5. HYPERPARAMETER TUNING
