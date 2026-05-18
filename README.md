@@ -1,10 +1,11 @@
+````md
 # AI-Final-Project-Animal-Extinction
 
 By: Noor Zureikat, Karim Junaidi, Hamza Almadi, Tina Haddad, Mohamed Embaby, and Haya Mourad
 
 ## Amphibian Extinction Risk Classification
 
-This project predicts whether an amphibian species is at high extinction risk using machine learning.
+This project uses machine learning to predict whether an amphibian species is at high extinction risk.
 
 The project uses two original Excel files:
 
@@ -34,13 +35,13 @@ Then run the final pipeline:
 python final_pipeline.py
 ```
 
-or:
+If your system uses `python3`, use:
 
 ```bash
 python3 final_pipeline.py
 ```
 
-`final_pipeline.py` is the main file for the final submission. The other Python files show the earlier separate stages of the project.
+`final_pipeline.py` is the main file for the final submission. The other Python files are included to show the earlier separate stages of the project.
 
 The final pipeline was exported from Google Colab, so some text appears as triple-quoted markdown comments. This does not affect the code. It still runs as a normal Python script.
 
@@ -55,10 +56,10 @@ AI-Final-Project-Animal-Extinction/
 ├── models/
 ├── outputs/
 ├── 00_data_cleaning_merging.py
-├── 01_eda.py
-├── 02_feature_engineering_pipeline.py
+├── 01_eda_preprocessing.py
+├── 02_feature_sets_and_pipeline.py
 ├── 03_baseline_models.py
-├── 04_model_tuning.py
+├── 04_hyperparamater_tuning.py
 ├── 05_final_model_evaluation.py
 ├── final_pipeline.py
 ├── requirements.txt
@@ -68,10 +69,10 @@ AI-Final-Project-Animal-Extinction/
 ## Files
 
 * `00_data_cleaning_merging.py`: cleans and merges the raw datasets
-* `01_eda.py`: explores the dataset
-* `02_feature_engineering_pipeline.py`: creates feature sets and preprocessing
+* `01_eda_preprocessing.py`: explores and preprocesses the dataset
+* `02_feature_sets_and_pipeline.py`: creates feature sets and preprocessing pipelines
 * `03_baseline_models.py`: trains baseline models
-* `04_model_tuning.py`: tunes the final models
+* `04_hyperparamater_tuning.py`: tunes the final models
 * `05_final_model_evaluation.py`: evaluates the final models
 * `final_pipeline.py`: runs the full final workflow
 
@@ -126,24 +127,14 @@ python -m pip install openpyxl
 
 If you see a `ResourceTracker` or `ChildProcessError` warning at the end, the code may still have run correctly as long as the results printed and the output files were created.
 
+```
+```
+
+
 
 ## Requirements
 
 This project was developed in Python and exported from Google Colab into `.py` files.  
 Some text sections may appear as triple-quoted markdown comments, but the code runs as a normal Python script.
 
-To install everything needed to run the project, use:
-
-```bash
-python -m pip install -r requirements.txt
-
-or, if your system uses python3:
-
-python3 -m pip install -r requirements.txt
-
-Then run:
-
-python final_pipeline.py
-
-The package openpyxl is required because the dataset is stored in Excel format.
-The package scipy is included because some scikit-learn tuning tools depend on it.
+To install everything needed to run the project, check the requiremnts.txt file
